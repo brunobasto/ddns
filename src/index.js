@@ -1,4 +1,5 @@
 const fetch = require('cross-fetch');
+const xml2js = require('xml2js');
 
 const INTERVAL = 10000;
 
@@ -34,15 +35,19 @@ const start = async () => {
 			const host = hosts.pop();
 			const endpoint = getEndpoint(host, argv.domain, argv.password, ip);
 
-			const updateResponse = await fetch(endpoint);
-			const updateText = await updateResponse.text();
+			const hostResponse = await fetch(endpoint);
+			const hostResult = await hostResponse.text();
+			const parsedResult = xml2js.parseString(hostResult, (error, result) => {
+				if (error) {
+					console.error(error);
+				}
 
-			if (updateText.indexOf('<ErrCount>0</ErrCount>') > -1) {
-				console.log(`Updated host ${host} at ${argv.domain} with ${ip}`);
-			}
-			else {
-				console.error(`Error updating host ${host} at ${argv.domain} with ${ip}`);
-			}
+				if (result['interface-response'].ErrCount[0] === '0') {
+					console.log(`${host} updated to ${ip}`);
+				} else {
+					console.error(`${host} failed to update to ${ip}: ${hostResult}`);
+				}
+			});
 		}
 	}
 	catch (error) {
