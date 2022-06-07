@@ -10,10 +10,11 @@
 		"docker-clean": "docker rmi pebblefinances/ddns",
 		"docker-stop": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=pebblefinances/ddns --format=\"{{.ID}}\"))",
 		"docker-push": "docker push pebblefinances/ddns",
-		"start": "node src/index.js"
+		"start": "NODE_ENV=production node src/index.js"
 	},
 	"dependencies": {
 		"cross-fetch": "^3.0.2",
+		"dotenv": "^16.0.1",
 		"xml2js": "^0.4.23",
 		"yargs": "^13.2.2"
 	},

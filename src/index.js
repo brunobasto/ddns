@@ -1,5 +1,11 @@
 const fetch = require('cross-fetch');
 const xml2js = require('xml2js');
+const dotenv = require('dotenv');
+const path = require('path');
+
+dotenv.config({
+    path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`),
+});
 
 const INTERVAL = 10000;
 
@@ -25,6 +31,11 @@ var argv = require('yargs')
 const getEndpoint = (host, domain, password, ip) => `https://dynamicdns.park-your-domain.com/update?host=${host}&domain=${domain}&password=${password}&ip=${ip}`;
 
 const start = async () => {
+	if (!argv.hosts?.length) {
+		console.error('No hosts specified');
+		process.exit(1);
+	}
+
 	const hosts = [...argv.hosts.split(',')];
 
 	try {
